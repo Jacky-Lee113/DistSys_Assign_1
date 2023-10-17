@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 public class MathServer {
     private ServerSocket serverSocket;
@@ -12,27 +12,13 @@ public class MathServer {
         System.out.println("Server Listening on port " + port + "....");
     }
 
-   public static int summation(int a, int b) {
-	   int summ = 0;
-	    if (a > b)	{
-			summ = b;
-		  while (a > b)	{
-			  summ += a;
-			  a--;
-		  }
-		   return summ;
-	  }
-	  else if (b > a)	{
-		  summ = a;
-		  while (b > a)	{
-			  summ += b;
-			  b--;
-		  }
-		  return summ;
-	  }
-	  else 	{
-		  return a + b;
-	  }
+   public static double epoxyToCon(double a, double b) {
+	  double force = a * 3.1415 * b * 600;
+	  return force;
+   }
+   public static double epoxyToSteel(double g, double h) {
+	  double sforce = g * 3.1415 * h * 1600;
+	  return sforce;
    }
 
     public static void main(String argv[]) throws Exception {
@@ -43,7 +29,7 @@ public class MathServer {
 			System.out.println("New client connected: " + client.getInetAddress().getHostAddress());
 			ClientHandler clientSock = new ClientHandler(client);
 			new Thread(clientSock).start();
-			dos.writeBytes("Enter 1 for calculator, 2 for tester, 3 to quit\n");
+			dos.writeBytes("Enter 1 to calculate the force it takes to remove a bolt in epoxy out of concrete and the force it takes to remove a steel bolt out of epoxy, 2 for password strength checker, 3 to quit\n");
         }
     }
 
@@ -77,23 +63,54 @@ public class MathServer {
                 System.out.println("I got: " + x);
                 int y = br.readInt();
                 System.out.println("I got: " + y);
-                int ans = summation(x, y);
-                System.out.println("The summation is: " + ans + "\n");
-                System.out.println("I am sending the average...");
-				int avg;
-                if (x == y) {
-                    avg = ans / x;
-                } else if (x > y) {
-                    avg = ans / (x - y + 1);
-                } else {
-                    avg = ans / (y - x + 1);
-                }
-					dos.writeBytes("The average is: " + avg);
-					dos.flush();
+                double con = epoxyToCon(x, y);
+				int m = br.readInt();
+                System.out.println("I got: " + m);
+				int l = br.readInt();
+                System.out.println("I got: " + l);
+				double steel = epoxyToSteel(m, l);
+                dos.writeBytes("The amount of force required to pullout the bold seperating at the epoxy to concrete is: " + con + "lbs and the force it takes to pull out a steel bolt out of epoxy is: " + steel + "lbs \n");
+                dos.flush();
 				}
 				else if (choice == 2)	{
 				dos.writeBytes("2 was selected");
+				dos.writeBytes("\n");
 				dos.flush();
+				int passSize = br.readInt();
+				String passWord = br.readUTF();
+				System.out.println(passWord);
+				boolean hasLower = false, hasUpper = false,
+                hasDigit = false, specialChar = false;
+				Set<Character> set = new HashSet<Character>(
+					Arrays.asList('!', '@', '#', '$', '%', '^', '&',
+								  '*', '(', ')', '-', '+'));
+				for (char i : passWord.toCharArray())
+				{
+					if (Character.isLowerCase(i))
+						hasLower = true;
+					if (Character.isUpperCase(i))
+						hasUpper = true;
+					if (Character.isDigit(i))
+						hasDigit = true;
+					if (set.contains(i))
+						specialChar = true;
+				}
+			   
+				// Strength of password
+				if (hasDigit && hasLower && hasUpper && specialChar
+					&& (passSize >= 8))	{
+					dos.writeBytes("Your password is strong");
+					dos.flush();
+				}
+				else if ((hasLower || hasUpper || specialChar)
+						 && (passSize >= 6))	{
+					dos.writeBytes("Your password is moderate");
+					dos.flush();
+						 }
+				else	{
+					dos.writeBytes("Your password is weak");
+					dos.flush();
+				}
 				}
 				else	{
 				System.out.println("Server connection terminated");
