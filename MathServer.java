@@ -1,7 +1,10 @@
 import java.io.*;
 import java.net.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 public class MathServer {
     private ServerSocket serverSocket;
@@ -11,14 +14,24 @@ public class MathServer {
         serverSocket.setReuseAddress(true);
         System.out.println("Server Listening on port " + port + "....");
     }
+	private static char[] generatePassword(int length) {
+      String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+      String specialCharacters = "!@#$";
+      String numbers = "1234567890";
+      String combinedChars = capitalCaseLetters + lowerCaseLetters + specialCharacters + numbers;
+      Random random = new Random();
+      char[] password = new char[length];
 
-   public static double epoxyToCon(double a, double b) {
-	  double force = a * 3.1415 * b * 600;
-	  return force;
-   }
-   public static double epoxyToSteel(double g, double h) {
-	  double sforce = g * 3.1415 * h * 1600;
-	  return sforce;
+      password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));
+      password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));
+      password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
+      password[3] = numbers.charAt(random.nextInt(numbers.length()));
+   
+      for(int i = 4; i< length ; i++) {
+         password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
+      }
+      return password;
    }
 
     public static void main(String argv[]) throws Exception {
@@ -29,7 +42,7 @@ public class MathServer {
 			System.out.println("New client connected: " + client.getInetAddress().getHostAddress());
 			ClientHandler clientSock = new ClientHandler(client);
 			new Thread(clientSock).start();
-			dos.writeBytes("Enter 1 to calculate the force it takes to remove a bolt in epoxy out of concrete and the force it takes to remove a steel bolt out of epoxy, 2 for password strength checker, 3 to quit\n");
+			dos.writeBytes("Enter 1 to generate a random password, 2 for password strength checker, 3 to quit\n");
         }
     }
 
@@ -60,17 +73,23 @@ public class MathServer {
 				dos.writeBytes("\n");
 				dos.flush();
 				int x = br.readInt();
-                System.out.println("I got: " + x);
-                int y = br.readInt();
-                System.out.println("I got: " + y);
-                double con = epoxyToCon(x, y);
-				int m = br.readInt();
-                System.out.println("I got: " + m);
-				int l = br.readInt();
-                System.out.println("I got: " + l);
-				double steel = epoxyToSteel(m, l);
-                dos.writeBytes("The amount of force required to pullout the bold seperating at the epoxy to concrete is: " + con + "lbs and the force it takes to pull out a steel bolt out of epoxy is: " + steel + "lbs \n");
-                dos.flush();
+				File f1 = new File("generated_passwords.txt");
+					if(!f1.exists()) {
+						f1.createNewFile();
+					}
+
+				FileWriter fileWritter = new FileWriter(f1.getName(),true);
+				BufferedWriter bw = new BufferedWriter(fileWritter);
+				String passHint = br.readUTF();
+				bw.write("Hint for password: ");
+				bw.write(passHint);
+				bw.write("\n");
+				bw.write("Password: ");
+				bw.write(generatePassword(x));
+				bw.write("\n");
+				bw.close();
+				dos.writeBytes("Password saved to generated_passwords.txt");
+				dos.flush();
 				}
 				else if (choice == 2)	{
 				dos.writeBytes("2 was selected\n");

@@ -25,24 +25,14 @@ public class MathClient {
 		System.out.println(output);
 		if (option == 1)	{
 			Scanner num1 = new Scanner(System.in);  // Create a Scanner object
-			System.out.println("\nEnter grout hole diameter in inches");
+			System.out.println("\nEnter the size of password you want");
 			int x = num1.nextInt();  // Read user input
 			dos.writeInt(x);
 			dos.flush();
-			Scanner num2 = new Scanner(System.in);  // Create a Scanner object
-			System.out.println("Enter length in inches of the grout hole");
-			int y = num2.nextInt();  // Read user input
-			dos.writeInt(y);
-			dos.flush();
-			Scanner num3 = new Scanner(System.in);  // Create a Scanner object
-			System.out.println("Enter length of inches bolt is embedded in grout");
-			int m = num3.nextInt();  // Read user input
-			dos.writeInt(m);
-			dos.flush();
-			Scanner num4 = new Scanner(System.in);  // Create a Scanner object
-			System.out.println("Enter length of inches bolt is embedded in grout");
-			int l = num4.nextInt();  // Read user input
-			dos.writeInt(l);
+			Scanner passCode = new Scanner(System.in);
+			System.out.println("\nEnter a hint for the password");
+			String gen = passCode.nextLine();
+			dos.writeUTF(gen);
 			dos.flush();
 			String str = br.readLine();
 			System.out.println(str + "\n");
