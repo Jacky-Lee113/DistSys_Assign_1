@@ -88,7 +88,7 @@ public class MathServer {
                 } else {
                     avg = ans / (y - x + 1);
                 }
-					dos.writeBytes("1 was selected");
+					dos.writeBytes("The average is: " + avg);
 					dos.flush();
 				}
 				else if (choice == 2)	{

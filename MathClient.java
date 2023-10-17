@@ -23,12 +23,7 @@ public class MathClient {
 		dos.flush();
 		String output = br.readLine();
 		System.out.println(output);
-		if (option == 3)	{
-		String term = br.readLine();
-		System.out.println(term);
-		System.exit(0);
-		}
-		else	{
+		if (option == 1)	{
 		Scanner num1 = new Scanner(System.in);  // Create a Scanner object
 		System.out.println("\nEnter first number");
 		int x = num1.nextInt();  // Read user input
@@ -40,7 +35,12 @@ public class MathClient {
 		dos.writeInt(y);
 		dos.flush();
 		String str = br.readLine();
-		System.out.println("I got: "+str);
+		System.out.println(str);
+		}
+		else	{
+		String term = br.readLine();
+		System.out.println(term);
+		System.exit(0);		
 		}
 	  }
    }
