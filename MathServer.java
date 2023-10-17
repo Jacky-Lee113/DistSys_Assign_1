@@ -73,41 +73,28 @@ public class MathServer {
                 dos.flush();
 				}
 				else if (choice == 2)	{
-				dos.writeBytes("2 was selected");
-				dos.writeBytes("\n");
+				dos.writeBytes("2 was selected\n");
 				dos.flush();
+
 				int passSize = br.readInt();
 				String passWord = br.readUTF();
 				System.out.println(passWord);
-				boolean hasLower = false, hasUpper = false,
-                hasDigit = false, specialChar = false;
-				Set<Character> set = new HashSet<Character>(
-					Arrays.asList('!', '@', '#', '$', '%', '^', '&',
-								  '*', '(', ')', '-', '+'));
-				for (char i : passWord.toCharArray())
-				{
-					if (Character.isLowerCase(i))
-						hasLower = true;
-					if (Character.isUpperCase(i))
-						hasUpper = true;
-					if (Character.isDigit(i))
-						hasDigit = true;
-					if (set.contains(i))
-						specialChar = true;
+
+				boolean hasLower = false, hasUpper = false, hasDigit = false, specialChar = false;
+				for (char i : passWord.toCharArray()) {
+					if (Character.isLowerCase(i)) hasLower = true;
+					if (Character.isUpperCase(i)) hasUpper = true;
+					if (Character.isDigit(i)) hasDigit = true;
+					if ("!@#$%^&*()-+".indexOf(i) != -1) specialChar = true;
 				}
-			   
-				// Strength of password
-				if (hasDigit && hasLower && hasUpper && specialChar
-					&& (passSize >= 8))	{
+
+				if (hasDigit && hasLower && hasUpper && specialChar && (passSize >= 8)) {
 					dos.writeBytes("Your password is strong");
 					dos.flush();
-				}
-				else if ((hasLower || hasUpper || specialChar)
-						 && (passSize >= 6))	{
+				} else if ((hasLower || hasUpper || specialChar) && (passSize >= 6)) {
 					dos.writeBytes("Your password is moderate");
 					dos.flush();
-						 }
-				else	{
+				} else {
 					dos.writeBytes("Your password is weak");
 					dos.flush();
 				}
