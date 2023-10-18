@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;	
+import java.net.http.HttpClient;
+import java.io.IOException;
 
 public class MathServer {
     private ServerSocket serverSocket;
@@ -40,9 +44,24 @@ public class MathServer {
 			Socket client = mathServer.serverSocket.accept();
 			DataOutputStream dos = new DataOutputStream(client.getOutputStream());
 			System.out.println("New client connected: " + client.getInetAddress().getHostAddress());
+			HttpRequest request = HttpRequest.newBuilder()
+			.uri(URI.create("https://facts-by-api-ninjas.p.rapidapi.com/v1/facts"))
+			.header("X-RapidAPI-Key", "c411a227a8mshe33324fedb7ec72p114947jsndc89e2730ea9")
+			.header("X-RapidAPI-Host", "facts-by-api-ninjas.p.rapidapi.com")
+			.method("GET", HttpRequest.BodyPublishers.noBody())
+			.build();
+			HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+			String jsonResponse = response.body();
+			int startIndex = jsonResponse.indexOf("\"fact\":") + 9; 
+			int endIndex = jsonResponse.indexOf("\"}", startIndex); 
+			String fact = jsonResponse.substring(startIndex, endIndex);
+			fact = fact.trim();
+			dos.writeBytes("Fun fact!");
+			dos.writeBytes(fact);
+			dos.writeBytes("\nEnter 1 to generate a random password, 2 for password strength checker, 3 to quit\n");
+			dos.flush();
 			ClientHandler clientSock = new ClientHandler(client);
 			new Thread(clientSock).start();
-			dos.writeBytes("Enter 1 to generate a random password, 2 for password strength checker, 3 to quit\n");
         }
     }
 
@@ -65,22 +84,26 @@ public class MathServer {
         public void run() {
             try {
                 br = new DataInputStream(clientSocket.getInputStream());
-                dos = new DataOutputStream(clientSocket.getOutputStream());
-				
+                dos = new DataOutputStream(clientSocket.getOutputStream());				
 				int choice = br.readInt();
                 if (choice == 1)	{
 				dos.writeBytes("1 was selected");
 				dos.writeBytes("\n");
 				dos.flush();
-				int x = br.readInt();
 				File f1 = new File("generated_passwords.txt");
-					if(!f1.exists()) {
-						f1.createNewFile();
-					}
+				if(!f1.exists()) {
+					f1.createNewFile();
+				}
 
 				FileWriter fileWritter = new FileWriter(f1.getName(),true);
 				BufferedWriter bw = new BufferedWriter(fileWritter);
 				String passHint = br.readUTF();
+				int x = br.readInt();
+				if (x < 4) {
+                dos.writeBytes("Error: Password length must be 4 or more characters.");
+                dos.flush();
+				}
+				else	{
 				bw.write("Hint for password: ");
 				bw.write(passHint);
 				bw.write("\n");
@@ -91,14 +114,13 @@ public class MathServer {
 				dos.writeBytes("Password saved to generated_passwords.txt");
 				dos.flush();
 				}
+				}
 				else if (choice == 2)	{
 				dos.writeBytes("2 was selected\n");
 				dos.flush();
 
 				int passSize = br.readInt();
 				String passWord = br.readUTF();
-				System.out.println(passWord);
-
 				boolean hasLower = false, hasUpper = false, hasDigit = false, specialChar = false;
 				for (char i : passWord.toCharArray()) {
 					if (Character.isLowerCase(i)) hasLower = true;
