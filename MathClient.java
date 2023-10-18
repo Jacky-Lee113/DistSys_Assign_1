@@ -15,7 +15,9 @@ public class MathClient {
 		echo = new Socket("localhost", 3500);
 		br = new DataInputStream(echo.getInputStream());
 		dos = new DataOutputStream(echo.getOutputStream());
-		String text = br.readLine().trim();
+		String fact = br.readLine();
+		System.out.println(fact);
+		String text = br.readLine();
 		System.out.println(text);
 		Scanner choice = new Scanner(System.in);  // Create a Scanner object
 		int option = choice.nextInt();  // Read user input
@@ -24,15 +26,15 @@ public class MathClient {
 		String output = br.readLine();
 		System.out.println(output);
 		if (option == 1)	{
-			Scanner num1 = new Scanner(System.in);  // Create a Scanner object
-			System.out.println("\nEnter the size of password you want");
-			int x = num1.nextInt();  // Read user input
-			dos.writeInt(x);
-			dos.flush();
 			Scanner passCode = new Scanner(System.in);
 			System.out.println("\nEnter a hint for the password");
 			String gen = passCode.nextLine();
 			dos.writeUTF(gen);
+			dos.flush();
+			Scanner num1 = new Scanner(System.in);  // Create a Scanner object
+			System.out.println("\nEnter the size of password you want");
+			int x = num1.nextInt();  // Read user input
+			dos.writeInt(x);
 			dos.flush();
 			String str = br.readLine();
 			System.out.println(str + "\n");
