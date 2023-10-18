@@ -26,8 +26,6 @@ public class MathClient {
 			Scanner passCode = new Scanner(System.in);
 			System.out.println("\nEnter a hint for the password");
 			String gen = passCode.nextLine();
-			dos.writeUTF(gen);
-			dos.flush();
 			Scanner num1 = new Scanner(System.in);  // Create a Scanner object
 			System.out.println("\nEnter the size of password you want");
 			int x = num1.nextInt();  // Read user input
@@ -37,8 +35,22 @@ public class MathClient {
 			else	{
 			dos.writeInt(x);
 			dos.flush();
-			String str = br.readLine();
-			System.out.println(str + "\n");
+			String genPassword = br.readLine();
+			File f1 = new File("generated_passwords.txt");
+				if(!f1.exists()) {
+					f1.createNewFile();
+				}
+
+				FileWriter fileWritter = new FileWriter(f1.getName(),true);
+				BufferedWriter bw = new BufferedWriter(fileWritter);
+				bw.write("Hint for password: ");
+				bw.write(gen);
+				bw.write("\n");
+				bw.write("Password: ");
+				bw.write(genPassword);
+				bw.write("\n");
+				bw.close();
+				System.out.println("File saved to generated_passwords.txt\n");
 			}
 		}
 		else if (option == 2)	{
@@ -55,8 +67,7 @@ public class MathClient {
 		else	{
 			String term = br.readLine();
 			System.out.println(term);
-			echo.close();
-			System.exit(0);
+			break;
 		}
 	  }
    }

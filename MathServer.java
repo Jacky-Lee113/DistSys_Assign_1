@@ -58,7 +58,7 @@ public class MathServer {
 			int endIndex = jsonResponse.indexOf("\"}", startIndex); 
 			String fact = jsonResponse.substring(startIndex, endIndex);
 			fact = fact.trim();
-			dos.writeBytes("Fun fact!");
+			dos.writeBytes("Fun fact! ");
 			dos.writeBytes(fact);
 			dos.writeBytes("\nEnter 1 to generate a random password, 2 for password strength checker, 3 to quit\n");
 			dos.flush();
@@ -89,29 +89,19 @@ public class MathServer {
                 dos = new DataOutputStream(clientSocket.getOutputStream());	
 				int choice = br.readInt();
                 if (choice == 1)	{
+				System.out.println("Generating password...");
 				dos.writeBytes("1 was selected");
 				dos.writeBytes("\n");
 				dos.flush();
-				File f1 = new File("generated_passwords.txt");
-				if(!f1.exists()) {
-					f1.createNewFile();
-				}
-
-				FileWriter fileWritter = new FileWriter(f1.getName(),true);
-				BufferedWriter bw = new BufferedWriter(fileWritter);
-				String passHint = br.readUTF();
 				int x = br.readInt();
-				bw.write("Hint for password: ");
-				bw.write(passHint);
-				bw.write("\n");
-				bw.write("Password: ");
-				bw.write(generatePassword(x));
-				bw.write("\n");
-				bw.close();
-				dos.writeBytes("Password saved to generated_passwords.txt");
+				char[] passwordChars = generatePassword(x);
+				String password = new String(passwordChars);
+				dos.writeBytes(password);
 				dos.flush();
+				System.out.println("Password generated");
 				}
 				else if (choice == 2)	{
+				System.out.println("Checking password strength");
 				dos.writeBytes("2 was selected\n");
 				dos.flush();
 
@@ -138,7 +128,8 @@ public class MathServer {
 				}
 				else	{
 				System.out.println("Server connection terminated");
-				dos.writeBytes("Server connection has been terminated");
+				dos.writeBytes("Server connection terminated");
+				dos.flush();
                 dos.close();
                 clientSocket.close();
 				}
