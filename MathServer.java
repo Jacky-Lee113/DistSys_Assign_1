@@ -9,15 +9,18 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;	
 import java.net.http.HttpClient;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MathServer {
     private ServerSocket serverSocket;
+    private ExecutorService threadPool;
 
     public MathServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         serverSocket.setReuseAddress(true);
         System.out.println("Server Listening on port " + port + "....");
-    }
+		}
 	private static char[] generatePassword(int length) {
       String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
@@ -43,7 +46,6 @@ public class MathServer {
         while (true) {
 			Socket client = mathServer.serverSocket.accept();
 			DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-			System.out.println("New client connected: " + client.getInetAddress().getHostAddress());
 			HttpRequest request = HttpRequest.newBuilder()
 			.uri(URI.create("https://facts-by-api-ninjas.p.rapidapi.com/v1/facts"))
 			.header("X-RapidAPI-Key", "c411a227a8mshe33324fedb7ec72p114947jsndc89e2730ea9")
@@ -84,7 +86,7 @@ public class MathServer {
         public void run() {
             try {
                 br = new DataInputStream(clientSocket.getInputStream());
-                dos = new DataOutputStream(clientSocket.getOutputStream());				
+                dos = new DataOutputStream(clientSocket.getOutputStream());	
 				int choice = br.readInt();
                 if (choice == 1)	{
 				dos.writeBytes("1 was selected");
@@ -99,11 +101,6 @@ public class MathServer {
 				BufferedWriter bw = new BufferedWriter(fileWritter);
 				String passHint = br.readUTF();
 				int x = br.readInt();
-				if (x < 4) {
-                dos.writeBytes("Error: Password length must be 4 or more characters.");
-                dos.flush();
-				}
-				else	{
 				bw.write("Hint for password: ");
 				bw.write(passHint);
 				bw.write("\n");
@@ -113,7 +110,6 @@ public class MathServer {
 				bw.close();
 				dos.writeBytes("Password saved to generated_passwords.txt");
 				dos.flush();
-				}
 				}
 				else if (choice == 2)	{
 				dos.writeBytes("2 was selected\n");
@@ -145,7 +141,6 @@ public class MathServer {
 				dos.writeBytes("Server connection has been terminated");
                 dos.close();
                 clientSocket.close();
-				System.exit(0);
 				}
             } catch (IOException e) {
             e.printStackTrace();

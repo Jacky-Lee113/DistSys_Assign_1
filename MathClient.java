@@ -1,7 +1,3 @@
-/**
- * @author Qusay H. Mahmoud
- */
-
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -13,6 +9,7 @@ public class MathClient {
      DataOutputStream dos;
 	 while (true)	{
 		echo = new Socket("localhost", 3500);
+		echo.setReuseAddress(true);
 		br = new DataInputStream(echo.getInputStream());
 		dos = new DataOutputStream(echo.getOutputStream());
 		String fact = br.readLine();
@@ -34,10 +31,15 @@ public class MathClient {
 			Scanner num1 = new Scanner(System.in);  // Create a Scanner object
 			System.out.println("\nEnter the size of password you want");
 			int x = num1.nextInt();  // Read user input
+			if (x < 4) {
+				System.out.println("Error: Password can not be smaller than 4");
+			}
+			else	{
 			dos.writeInt(x);
 			dos.flush();
 			String str = br.readLine();
 			System.out.println(str + "\n");
+			}
 		}
 		else if (option == 2)	{
 			Scanner passWord = new Scanner(System.in);  // Create a Scanner object
@@ -53,7 +55,8 @@ public class MathClient {
 		else	{
 			String term = br.readLine();
 			System.out.println(term);
-			System.exit(0);		
+			echo.close();
+			System.exit(0);
 		}
 	  }
    }
